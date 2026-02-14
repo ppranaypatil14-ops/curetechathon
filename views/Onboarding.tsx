@@ -1,0 +1,127 @@
+
+import React, { useState } from 'react';
+import { UserRole } from '../types';
+import { Languages, UserCircle2, Stethoscope, HeartPulse, Volume2, ChevronRight, Check } from 'lucide-react';
+
+interface OnboardingProps {
+  onComplete: (role: UserRole, language: string) => void;
+}
+
+const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
+  const [step, setStep] = useState(1);
+  const [lang, setLang] = useState('English');
+
+  const languages = [
+    { name: 'English', native: 'English', code: 'EN' },
+    { name: 'Hindi', native: 'हिन्दी', code: 'HI' },
+    { name: 'Marathi', native: 'मराठी', code: 'MR' },
+    { name: 'Tamil', native: 'தமிழ்', code: 'TA' }
+  ];
+
+  const roles = [
+    { id: UserRole.PHW, label: 'I am a Worker', icon: <HeartPulse />, color: 'bg-teal-500', desc: 'Manage village health cards.' },
+    { id: UserRole.PATIENT, label: 'I am a Patient', icon: <UserCircle2 />, color: 'bg-emerald-500', desc: 'Check my health score.' },
+    { id: UserRole.DOCTOR, label: 'I am a Doctor', icon: <Stethoscope />, color: 'bg-indigo-500', desc: 'Expert consults.' }
+  ];
+
+  return (
+    <div className="animate-slide-up max-w-md mx-auto py-6">
+      <div className="text-center mb-10">
+        <div className="inline-block p-4 bg-white rounded-3xl neo-shadow mb-4">
+          <Activity className="w-10 h-10 text-teal-600" />
+        </div>
+        <h2 className="text-3xl font-extrabold text-teal-950 mb-2">SwasthyaSetu</h2>
+        <p className="text-teal-700/60 font-medium">Your Health, Your Language, Your Life.</p>
+      </div>
+
+      <div className="glass p-8 rounded-[2.5rem] neo-shadow border border-white/50">
+        {step === 1 ? (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-teal-100 rounded-lg text-teal-600">
+                  <Languages className="w-5 h-5" />
+                </div>
+                <h3 className="text-xl font-bold text-teal-900">Choose Language</h3>
+              </div>
+              <button className="flex items-center gap-2 px-3 py-1.5 bg-teal-50 text-teal-600 rounded-full text-xs font-bold hover:bg-teal-100 transition-colors">
+                <Volume2 className="w-4 h-4" /> <span>Help</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              {languages.map((l) => (
+                <button
+                  key={l.name}
+                  onClick={() => { setLang(l.name); setStep(2); }}
+                  className={`p-5 flex items-center justify-between rounded-2xl border-2 transition-all group ${
+                    lang === l.name 
+                      ? 'border-teal-500 bg-teal-50/50 neo-shadow' 
+                      : 'border-slate-100 bg-white hover:border-teal-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center font-bold text-teal-600 text-sm">
+                      {l.code}
+                    </div>
+                    <div className="text-left">
+                      <div className="text-lg font-bold text-teal-950">{l.native}</div>
+                      <div className="text-sm text-teal-600/60 font-medium">{l.name}</div>
+                    </div>
+                  </div>
+                  <div className={`p-2 rounded-full transition-all ${lang === l.name ? 'bg-teal-500 text-white' : 'bg-slate-50 text-slate-300'}`}>
+                    <Check className="w-4 h-4" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-teal-100 rounded-lg text-teal-600">
+                <UserCircle2 className="w-5 h-5" />
+              </div>
+              <h3 className="text-xl font-bold text-teal-900">Identify Yourself</h3>
+            </div>
+
+            <div className="space-y-3">
+              {roles.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => onComplete(r.id, lang)}
+                  className="w-full p-4 flex items-center gap-5 border-2 border-slate-50 bg-white hover:border-teal-400 hover:bg-teal-50/30 rounded-3xl transition-all group text-left neo-shadow"
+                >
+                  {/* Fix: Adding <any> to React.ReactElement to allow custom props in cloneElement */}
+                  <div className={`p-4 ${r.color} text-white rounded-2xl neo-shadow group-hover:scale-105 transition-transform`}>
+                    {React.cloneElement(r.icon as React.ReactElement<any>, { className: 'w-7 h-7' })}
+                  </div>
+                  <div className="flex-grow">
+                    <div className="text-lg font-extrabold text-teal-950">{r.label}</div>
+                    <p className="text-teal-700/50 text-xs font-semibold">{r.desc}</p>
+                  </div>
+                  <ChevronRight className="text-teal-200 group-hover:text-teal-500" />
+                </button>
+              ))}
+            </div>
+
+            <button 
+              onClick={() => setStep(1)}
+              className="w-full py-4 text-teal-500 font-bold text-sm hover:text-teal-600 transition-colors bg-teal-50/50 rounded-2xl"
+            >
+              Change Language
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Internal Activity icon for Onboarding branding
+const Activity = (props: any) => (
+  <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+);
+
+// Fix: Adding the missing default export for Onboarding
+export default Onboarding;

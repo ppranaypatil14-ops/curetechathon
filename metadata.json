@@ -1,0 +1,8 @@
+
+{
+  "name": "CURE Clinic",
+  "description": "Modern, professional healthcare services for your well-being. Book appointments and consult with our expert doctors.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
