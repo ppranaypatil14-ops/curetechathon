@@ -1,11 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
 import { MessageSquare, X, Send, Loader2, Sparkles, Activity } from 'lucide-react';
+import { chatWithAI } from '../geminiService';
 
 const AIAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<{role: 'user' | 'assistant', text: string}[]>([
+  const [messages, setMessages] = useState<{ role: 'user' | 'assistant', text: string }[]>([
     { role: 'assistant', text: 'Hello! I am CURE AI. How can I assist you with your health queries today?' }
   ]);
   const [input, setInput] = useState('');
@@ -27,19 +27,14 @@ const AIAssistant: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: userText,
-        config: {
-          systemInstruction: "You are CURE AI, a professional medical assistant for CURE Clinic. Your tone is professional, caring, and informative. Always provide helpful health advice but remind users to consult with our real doctors for definitive diagnosis. Keep responses concise.",
-        }
-      });
-
-      setMessages(prev => [...prev, { role: 'assistant', text: response.text || "I'm sorry, I couldn't process that. Please try again." }]);
-    } catch (error) {
+      const responseText = await chatWithAI(userText);
+      setMessages(prev => [...prev, { role: 'assistant', text: responseText }]);
+    } catch (error: any) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant', text: "Error connecting to AI service. Please check your connection." }]);
+      const errorMsg = error.message?.includes("API Key")
+        ? "AI is currently unavailable. Please check the API key setup in the .env file."
+        : "Error connecting to AI service. Please try again later.";
+      setMessages(prev => [...prev, { role: 'assistant', text: errorMsg }]);
     } finally {
       setIsLoading(false);
     }
@@ -49,9 +44,10 @@ const AIAssistant: React.FC = () => {
     <div className="fixed bottom-8 right-8 z-[100] transition-colors">
       {/* FAB */}
       {!isOpen && (
-        <button 
+        <button
           onClick={() => setIsOpen(true)}
-          className="bg-sky-600 text-white p-4 rounded-2xl shadow-2xl hover:scale-110 transition-transform btn-shadow group"
+          className="bg-sky-600 text-white p-4 rounded-2xl shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group relative overflow-hidden"
+          style={{ boxShadow: '0 10px 15px -3px rgba(2, 132, 199, 0.3)' }}
         >
           <Sparkles className="w-8 h-8 group-hover:rotate-12 transition-transform" />
           <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
@@ -60,7 +56,7 @@ const AIAssistant: React.FC = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="bg-white dark:bg-slate-900 w-[380px] h-[550px] rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] border border-slate-100 dark:border-slate-800 flex flex-col overflow-hidden animate-slide-up">
+        <div className="bg-white dark:bg-slate-900 w-[380px] h-[550px] rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] border border-slate-100 dark:border-slate-800 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
           <div className="bg-slate-900 dark:bg-black p-6 text-white flex justify-between items-center">
             <div className="flex items-center gap-3">
@@ -84,9 +80,8 @@ const AIAssistant: React.FC = () => {
           <div ref={scrollRef} className="flex-grow overflow-y-auto p-6 space-y-6 custom-scrollbar bg-slate-50/50 dark:bg-slate-950/20">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-sm ${
-                  m.role === 'user' ? 'bg-sky-600 text-white rounded-tr-none' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'
-                }`}>
+                <div className={`max-w-[85%] p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-sm ${m.role === 'user' ? 'bg-sky-600 text-white rounded-tr-none' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'
+                  }`}>
                   {m.text}
                 </div>
               </div>
@@ -104,15 +99,15 @@ const AIAssistant: React.FC = () => {
           {/* Input */}
           <div className="p-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
             <div className="flex gap-2 bg-slate-50 dark:bg-slate-800 p-2 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Ask health related questions..."
                 className="flex-grow bg-transparent border-none focus:ring-0 text-sm font-medium px-2 outline-none dark:text-white"
               />
-              <button 
+              <button
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
                 className="p-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 disabled:opacity-50 transition-colors"

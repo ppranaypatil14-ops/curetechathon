@@ -1,9 +1,16 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Vitals, DiagnosisResult, RiskPredictionResult, RiskLevel } from "./types";
+import { Vitals, DiagnosisResult, RiskPredictionResult } from "./types";
 
-// Fix: Initializing GoogleGenAI with the required direct reference to process.env.API_KEY
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || "";
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+
+export const checkAI = () => {
+  if (!ai) {
+    throw new Error("Gemini API Key is missing. Please add GEMINI_API_KEY to your .env file.");
+  }
+  return ai;
+};
 
 export const getAIdiagnosis = async (vitals: Vitals, symptoms: string): Promise<DiagnosisResult> => {
   const prompt = `Analyze patient vitals and symptoms for a primary healthcare worker.
@@ -12,8 +19,8 @@ export const getAIdiagnosis = async (vitals: Vitals, symptoms: string): Promise<
   
   Provide likely conditions with probabilities, a risk level (LOW, MODERATE, HIGH), and a suggested treatment protocol.`;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
+  const response = await checkAI().models.generateContent({
+    model: 'gemini-2.5-flash',
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -49,8 +56,8 @@ export const getHealthRiskPrediction = async (vitals: Vitals, lifestyle: string)
   
   Predict risk for Diabetes, Hypertension, and Heart Disease.`;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
+  const response = await checkAI().models.generateContent({
+    model: 'gemini-2.5-flash',
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -71,4 +78,15 @@ export const getHealthRiskPrediction = async (vitals: Vitals, lifestyle: string)
   });
 
   return JSON.parse(response.text) as RiskPredictionResult[];
+};
+
+export const chatWithAI = async (message: string): Promise<string> => {
+  const response = await checkAI().models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: message,
+    config: {
+      systemInstruction: "You are CURE AI, a professional medical assistant for CURE Clinic. Your tone is professional, caring, and informative. Always provide helpful health advice but remind users to consult with our real doctors for definitive diagnosis. Keep responses concise.",
+    }
+  });
+  return response.text || "I'm sorry, I couldn't process that.";
 };

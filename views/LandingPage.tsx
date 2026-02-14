@@ -5,16 +5,17 @@ import { Shield, Users, Clock, Heart, ArrowRight, Star, Stethoscope, Microscope,
 interface LandingPageProps {
   onBookClick: () => void;
   onServiceClick: (service: any) => void;
+  t: any;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick, t }) => {
   const services = [
-    { title: 'Cardiology', icon: <Heart />, desc: 'Expert heart care using latest technologies.', color: 'rose' },
-    { title: 'General Medicine', icon: <Stethoscope />, desc: 'Primary healthcare for your entire family.', color: 'sky' },
-    { title: 'Pediatrics', icon: <Baby />, desc: 'Specialized care for infants and children.', color: 'emerald' },
-    { title: 'Diagnostics', icon: <Microscope />, desc: 'Precise and accurate testing facilities.', color: 'violet' },
-    { title: 'Pharmacy', icon: <Pill />, desc: 'Quick access to essential medications.', color: 'amber' },
-    { title: 'Emergency', icon: <Shield />, desc: '24/7 emergency response and care.', color: 'indigo' }
+    { title: t.services.list.cardio.title, icon: <Heart />, desc: t.services.list.cardio.desc, color: 'rose' },
+    { title: t.services.list.general.title, icon: <Stethoscope />, desc: t.services.list.general.desc, color: 'sky' },
+    { title: t.services.list.pedia.title, icon: <Baby />, desc: t.services.list.pedia.desc, color: 'emerald' },
+    { title: t.services.list.diag.title, icon: <Microscope />, desc: t.services.list.diag.desc, color: 'violet' },
+    { title: t.services.list.pharma.title, icon: <Pill />, desc: t.services.list.pharma.desc, color: 'amber' },
+    { title: t.services.list.emergency.title, icon: <Shield />, desc: t.services.list.emergency.desc, color: 'indigo' }
   ];
 
   const getColorClasses = (color: string) => {
@@ -56,25 +57,25 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick }
           <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent dark:from-slate-950 dark:via-transparent dark:to-transparent"></div>
         </div>
 
-        <div className="container mx-auto px-6 max-w-7xl relative z-10">
+        <div className="w-full px-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="animate-fade">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 text-xs font-extrabold uppercase tracking-widest mb-6 border border-sky-100 dark:border-sky-800 shadow-sm">
                 <span className="flex h-2 w-2 rounded-full bg-sky-600"></span>
-                Modern Healthcare Redefined
+                {t.hero.badge}
               </div>
               <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white leading-[1.1] mb-8 tracking-[-0.02em]">
-                Expert care for your <span className="text-sky-600 dark:text-sky-400 italic font-medium">healthy</span> future.
+                {t.hero.title}
               </h1>
               <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 mb-10 leading-[1.7] max-w-xl font-medium">
-                Cure Clinic provides personalized, <span className="text-slate-900 dark:text-white underline decoration-sky-500/30 underline-offset-4">state-of-the-art</span> medical services. Our team of specialists is dedicated to your complete well-being through advanced diagnostics.
+                {t.hero.desc}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-16">
                 <button
                   onClick={onBookClick}
                   className="bg-sky-600 text-white px-8 py-4 rounded-2xl font-bold text-lg btn-shadow hover:bg-sky-700 transition-all flex items-center justify-center gap-2 group"
                 >
-                  Book Appointment <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                  {t.hero.book} <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
                   onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
@@ -119,11 +120,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick }
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-24 bg-white dark:bg-slate-950 relative transition-colors">
-        <div className="container mx-auto px-6 max-w-7xl">
+      <section id="services" className="py-32 bg-white dark:bg-slate-950 relative transition-colors">
+        <div className="w-full px-12">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">Comprehensive Healthcare</h2>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">We offer a wide range of specialized medical services to ensure you receive the most effective care possible in a comfortable environment.</p>
+            <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">{t.services.title}</h2>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">{t.services.desc}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -142,7 +143,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick }
                     onClick={() => onServiceClick(s)}
                     className="font-bold text-sm inline-flex items-center gap-2 text-slate-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-all"
                   >
-                    Explore Details <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" />
+                    {t.services.explore} <ArrowRight className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
               </div>
@@ -153,14 +154,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick }
 
       {/* Trust/About Section */}
       <section id="about" className="py-24 bg-slate-50 dark:bg-slate-900/20 transition-colors">
-        <div className="container mx-auto px-6 max-w-7xl flex flex-col md:flex-row items-center gap-16">
+        <div className="w-full px-12 flex flex-col xl:flex-row items-center gap-20">
           <div className="flex-1 space-y-8">
-            <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">Why Choose CURE?</h2>
+            <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">{t.about.title}</h2>
             <div className="space-y-6">
               {[
-                { title: 'Experienced Specialists', desc: 'Our doctors are leaders in their respective fields with decades of experience.', icon: <Users /> },
-                { title: 'Modern Technology', desc: 'We utilize the latest medical advancements for diagnosis and treatment.', icon: <Microscope /> },
-                { title: 'Patient-First Approach', desc: 'Your comfort and health are our top priorities throughout your journey.', icon: <Heart /> }
+                { title: t.about.item1.title, desc: t.about.item1.desc, icon: <Users /> },
+                { title: t.about.item2.title, desc: t.about.item2.desc, icon: <Microscope /> },
+                { title: t.about.item3.title, desc: t.about.item3.desc, icon: <Heart /> }
               ].map((item, i) => (
                 <div key={i} className="flex gap-4">
                   <div className="w-12 h-12 shrink-0 bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-xl flex items-center justify-center">
@@ -180,15 +181,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick }
                 {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-5 h-5 fill-current" />)}
               </div>
               <p className="text-xl font-medium text-slate-800 dark:text-slate-200 leading-relaxed italic mb-8 relative z-10">
-                "CURE Clinic has completely changed my perspective on healthcare. The staff is professional, the facility is clean, and the care is genuinely personal."
+                {t.about.testimonial}
               </p>
               <div className="flex items-center gap-4 relative z-10">
                 <div className="w-12 h-12 bg-sky-100 dark:bg-sky-900/30 rounded-full overflow-hidden border-2 border-sky-50 dark:border-sky-800 shadow-sm">
                   <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Patient5" alt="Reviewer" />
                 </div>
                 <div>
-                  <h5 className="font-bold text-slate-900 dark:text-white">David Thompson</h5>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Patient since 2021</p>
+                  <h5 className="font-bold text-slate-900 dark:text-white">{t.about.patient}</h5>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">{t.about.since}</p>
                 </div>
               </div>
               <div className="absolute top-[-20px] right-[-20px] text-slate-50 dark:text-white/5 group-hover:text-slate-100 dark:group-hover:text-white/10 transition-colors">
@@ -200,19 +201,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick }
       </section>
 
       {/* Appointment CTA */}
-      <section id="contact" className="py-24 transition-colors">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="bg-slate-900 dark:bg-slate-900/80 rounded-[3.5rem] p-12 md:p-24 text-white relative overflow-hidden text-center md:text-left shadow-2xl">
+      <section id="contact" className="py-32 transition-colors">
+        <div className="w-full px-12">
+          <div className="bg-slate-900 dark:bg-slate-900/80 rounded-[4rem] p-16 md:p-32 text-white relative overflow-hidden text-center md:text-left shadow-2xl">
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
               <div className="max-w-xl">
-                <h2 className="text-4xl md:text-6xl font-extrabold mb-8 leading-[1.1] tracking-tight">Ready to start your healthy journey?</h2>
-                <p className="text-slate-400 text-xl mb-0 font-medium leading-relaxed">Schedule your consultation today and experience the future of professional, world-class healthcare tailored to your needs.</p>
+                <h2 className="text-4xl md:text-6xl font-extrabold mb-8 leading-[1.1] tracking-tight">{t.cta.title}</h2>
+                <p className="text-slate-400 text-xl mb-0 font-medium leading-relaxed">{t.cta.desc}</p>
               </div>
               <div className="shrink-0 space-y-6">
 
                 <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-6 text-sm text-slate-400 font-bold tracking-widest uppercase">
-                  <div className="flex items-center gap-2"><Clock className="w-5 h-5 text-sky-400" /> Open 24/7</div>
-                  <div className="flex items-center gap-2"><Shield className="w-5 h-5 text-sky-400" /> Secure Data</div>
+                  <div className="flex items-center gap-2"><Clock className="w-5 h-5 text-sky-400" /> {t.cta.open}</div>
+                  <div className="flex items-center gap-2"><Shield className="w-5 h-5 text-sky-400" /> {t.cta.secure}</div>
                 </div>
               </div>
             </div>

@@ -8,16 +8,18 @@ import PHWDashboard from './views/PHWDashboard';
 import PatientDashboard from './views/PatientDashboard';
 import DoctorDashboard from './views/DoctorDashboard';
 import ServiceDetail from './views/ServiceDetail';
+import Emergency from './views/Emergency';
 import AIAssistant from './components/AIAssistant';
 import { UserRole } from './types';
-import { Activity, LogOut, Globe, ChevronDown } from 'lucide-react';
+import { Activity, LogOut, Globe, ChevronDown, PhoneCall } from 'lucide-react';
+import { translations } from './translations';
 
 const App: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
 
   const [userRole, setUserRole] = useState<UserRole>(UserRole.NONE);
-  const [currentView, setCurrentView] = useState<'landing' | 'booking' | 'login' | 'signup' | 'onboarding' | 'dashboard' | 'service'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'booking' | 'login' | 'signup' | 'onboarding' | 'dashboard' | 'service' | 'emergency'>('landing');
   const [selectedService, setSelectedService] = useState<any>(null);
   const [language, setLanguage] = useState<'english' | 'hindi' | 'marathi'>('english');
   const [showLangMenu, setShowLangMenu] = useState(false);
@@ -74,13 +76,20 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const navigateToEmergency = () => {
+    setCurrentView('emergency');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const t = translations[language];
+
   const renderContent = () => {
     if (currentView === 'dashboard') {
       switch (userRole) {
         case UserRole.PHW: return <PHWDashboard onLogout={handleLogout} />;
         case UserRole.PATIENT: return <PatientDashboard onLogout={handleLogout} />;
         case UserRole.DOCTOR: return <DoctorDashboard onLogout={handleLogout} />;
-        default: return <LandingPage onBookClick={navigateToBooking} />;
+        default: return <LandingPage onBookClick={navigateToBooking} onServiceClick={handleServiceClick} t={t.landing} />;
       }
     }
 
@@ -88,15 +97,17 @@ const App: React.FC = () => {
       case 'booking':
         return <BookingInfo onBack={navigateToHome} />;
       case 'login':
-        return <Auth mode="login" onBack={navigateToHome} onToggleMode={navigateToSignup} />;
+        return <Auth mode="login" onBack={navigateToHome} onToggleMode={navigateToSignup} t={t.auth} />;
       case 'signup':
-        return <Auth mode="signup" onBack={navigateToHome} onToggleMode={navigateToLogin} />;
+        return <Auth mode="signup" onBack={navigateToHome} onToggleMode={navigateToLogin} t={t.auth} />;
       case 'onboarding':
         return <Onboarding onComplete={handleOnboardingComplete} />;
       case 'service':
         return <ServiceDetail service={selectedService} onBack={navigateToHome} />;
+      case 'emergency':
+        return <Emergency onBack={navigateToHome} t={t.emergency} />;
       default:
-        return <LandingPage onBookClick={navigateToBooking} onServiceClick={handleServiceClick} />;
+        return <LandingPage onBookClick={navigateToBooking} onServiceClick={handleServiceClick} t={t.landing} />;
     }
   };
 
@@ -116,7 +127,7 @@ const App: React.FC = () => {
 
       {/* Navigation */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || currentView !== 'landing' ? 'glass py-3' : 'bg-transparent py-6'}`}>
-        <div className="container mx-auto px-6 flex justify-between items-center max-w-7xl">
+        <div className="w-full px-12 flex justify-between items-center">
           <div
             className="flex items-center gap-3 cursor-pointer transition-transform hover:scale-105"
             onClick={navigateToHome}
@@ -129,10 +140,10 @@ const App: React.FC = () => {
 
           <div className="hidden md:flex items-center gap-6">
             <div className="flex items-center gap-10 text-xl font-bold text-slate-700 dark:text-slate-300 mr-4">
-              <button onClick={navigateToHome} className={`hover:text-sky-600 dark:hover:text-sky-400 transition-colors ${currentView === 'landing' ? 'text-sky-600 dark:text-sky-400' : ''}`}>Home</button>
-              <a href="#services" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">Services</a>
-              <a href="#about" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">About</a>
-              <a href="#contact" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">Contact</a>
+              <button onClick={navigateToHome} className={`hover:text-sky-600 dark:hover:text-sky-400 transition-colors ${currentView === 'landing' ? 'text-sky-600 dark:text-sky-400' : ''}`}>{t.nav.home}</button>
+              <a href="#services" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.nav.services}</a>
+              <a href="#about" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.nav.about}</a>
+              <a href="#contact" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.nav.contact}</a>
             </div>
 
             <div className="flex items-center gap-3">
@@ -144,13 +155,13 @@ const App: React.FC = () => {
                     onClick={navigateToLogin}
                     className="text-lg font-bold text-sky-600 dark:text-sky-400 px-8 py-3 rounded-full border-2 border-sky-100 dark:border-sky-900/30 hover:border-sky-200 dark:hover:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950 transition-all"
                   >
-                    Log In
+                    {t.nav.login}
                   </button>
                   <button
                     onClick={navigateToSignup}
                     className="text-lg font-bold text-sky-600 dark:text-sky-400 px-8 py-3 rounded-full border-2 border-sky-100 dark:border-sky-900/30 hover:border-sky-200 dark:hover:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950 transition-all"
                   >
-                    Sign Up
+                    {t.nav.signup}
                   </button>
                 </>
               ) : (
@@ -158,7 +169,7 @@ const App: React.FC = () => {
                   onClick={handleLogout}
                   className="text-sm font-bold text-red-500 px-5 py-2.5 rounded-full border-2 border-red-50 hover:bg-red-50 transition-all flex items-center gap-2"
                 >
-                  <LogOut className="w-4 h-4" /> Logout
+                  <LogOut className="w-4 h-4" /> {t.nav.logout}
                 </button>
               )}
 
@@ -195,6 +206,14 @@ const App: React.FC = () => {
                 )}
               </div>
 
+              <button
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-red-600 text-white font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-red-500/30 animate-pulse active:scale-95"
+                onClick={navigateToEmergency}
+              >
+                <PhoneCall className="w-5 h-5" />
+                <span className="hidden lg:inline">{t.nav.emergency}</span>
+              </button>
+
 
             </div>
           </div>
@@ -209,7 +228,7 @@ const App: React.FC = () => {
 
       {/* Main Content */}
       <main className={`transition-all duration-500 ${currentView !== 'landing' ? 'pt-24 min-h-[80vh]' : ''}`}>
-        <div className={isAuthOrDashboard ? 'container mx-auto px-6 max-w-7xl pb-20' : ''}>
+        <div className={isAuthOrDashboard ? 'w-full px-12 pb-20' : ''}>
           {renderContent()}
         </div>
       </main>
@@ -219,7 +238,7 @@ const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 py-16 transition-colors mt-auto">
-        <div className="container mx-auto px-6 max-w-7xl">
+        <div className="w-full px-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="space-y-4">
               <div className="flex items-center gap-3 cursor-pointer" onClick={navigateToHome}>
@@ -229,38 +248,38 @@ const App: React.FC = () => {
                 <span className="text-3xl font-black tracking-tighter dark:text-white">CURE</span>
               </div>
               <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                Dedicated to providing professional medical services with a touch of personal care.
+                {t.footer.desc}
               </p>
             </div>
             <div>
-              <h4 className="font-bold mb-4 dark:text-white">Services</h4>
+              <h4 className="font-bold mb-4 dark:text-white">{t.footer.services}</h4>
               <ul className="text-slate-500 dark:text-slate-400 text-sm space-y-2">
-                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">General Medicine</a></li>
-                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">Cardiology</a></li>
-                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">Pediatrics</a></li>
-                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">Diagnostics</a></li>
+                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.landing.services.list.general.title}</a></li>
+                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.landing.services.list.cardio.title}</a></li>
+                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.landing.services.list.pedia.title}</a></li>
+                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.landing.services.list.diag.title}</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-4 dark:text-white">Clinic</h4>
+              <h4 className="font-bold mb-4 dark:text-white">{t.footer.clinic}</h4>
               <ul className="text-slate-500 dark:text-slate-400 text-sm space-y-2">
-                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">Our Doctors</a></li>
-                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">Testimonials</a></li>
-                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">Pharmacy</a></li>
-                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">FAQ</a></li>
+                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.footer.links.doctors}</a></li>
+                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.footer.links.testimonials}</a></li>
+                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.landing.services.list.pharma.title}</a></li>
+                <li><a href="#" className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.footer.links.faq}</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-4 dark:text-white">Newsletter</h4>
-              <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Stay updated with health tips.</p>
+              <h4 className="font-bold mb-4 dark:text-white">{t.footer.newsletter}</h4>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">{t.footer.newsDesc}</p>
               <div className="flex gap-2">
-                <input type="email" placeholder="Email" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg text-sm w-full outline-none focus:ring-2 focus:ring-sky-100 dark:focus:ring-sky-900 dark:text-white" />
-                <button className="bg-sky-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-sky-700 transition-colors">Go</button>
+                <input type="email" placeholder={t.footer.email} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg text-sm w-full outline-none focus:ring-2 focus:ring-sky-100 dark:focus:ring-sky-900 dark:text-white" />
+                <button className="bg-sky-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-sky-700 transition-colors">{t.footer.go}</button>
               </div>
             </div>
           </div>
           <div className="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800 text-center text-slate-400 dark:text-slate-500 text-xs">
-            &copy; 2024 CURE Healthcare Systems. All rights reserved.
+            {t.footer.rights}
           </div>
         </div>
       </footer>
