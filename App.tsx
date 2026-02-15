@@ -97,9 +97,9 @@ const App: React.FC = () => {
       case 'booking':
         return <BookingInfo onBack={navigateToHome} />;
       case 'login':
-        return <Auth mode="login" onBack={navigateToHome} onToggleMode={navigateToSignup} t={t.auth} />;
+        return <Auth key="login-view" mode="login" onBack={navigateToHome} onToggleMode={navigateToSignup} t={t.auth} />;
       case 'signup':
-        return <Auth mode="signup" onBack={navigateToHome} onToggleMode={navigateToLogin} t={t.auth} />;
+        return <Auth key="signup-view" mode="signup" onBack={navigateToHome} onToggleMode={navigateToLogin} t={t.auth} />;
       case 'onboarding':
         return <Onboarding onComplete={handleOnboardingComplete} />;
       case 'service':
@@ -129,7 +129,7 @@ const App: React.FC = () => {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || currentView !== 'landing' ? 'glass py-3' : 'bg-transparent py-6'}`}>
         <div className="w-full px-12 flex justify-between items-center">
           <div
-            className="flex items-center gap-3 cursor-pointer transition-transform hover:scale-105"
+            className="flex items-center gap-3 cursor-pointer transition-transform hover:scale-105 animate-bounce-down"
             onClick={navigateToHome}
           >
             <div className="w-14 h-14 bg-sky-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
@@ -140,10 +140,10 @@ const App: React.FC = () => {
 
           <div className="hidden md:flex items-center gap-6">
             <div className="flex items-center gap-10 text-xl font-bold text-slate-700 dark:text-slate-300 mr-4">
-              <button onClick={navigateToHome} className={`hover:text-sky-600 dark:hover:text-sky-400 transition-colors ${currentView === 'landing' ? 'text-sky-600 dark:text-sky-400' : ''}`}>{t.nav.home}</button>
-              <a href="#services" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.nav.services}</a>
-              <a href="#about" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.nav.about}</a>
-              <a href="#contact" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t.nav.contact}</a>
+              <button onClick={navigateToHome} className={`hover:text-sky-600 dark:hover:text-sky-400 transition-colors animate-nav-combined [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards] ${currentView === 'landing' ? 'text-sky-600 dark:text-sky-400' : ''}`}>{t.nav.home}</button>
+              <a href="#services" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors animate-nav-combined [animation-delay:150ms] opacity-0 [animation-fill-mode:forwards]">{t.nav.services}</a>
+              <a href="#about" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors animate-nav-combined [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">{t.nav.about}</a>
+              <a href="#contact" onClick={(e) => { if (currentView !== 'landing') { e.preventDefault(); navigateToHome(); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100); } }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors animate-nav-combined [animation-delay:250ms] opacity-0 [animation-fill-mode:forwards]">{t.nav.contact}</a>
             </div>
 
             <div className="flex items-center gap-3">
@@ -153,13 +153,13 @@ const App: React.FC = () => {
                 <>
                   <button
                     onClick={navigateToLogin}
-                    className="text-lg font-bold text-sky-600 dark:text-sky-400 px-8 py-3 rounded-full border-2 border-sky-100 dark:border-sky-900/30 hover:border-sky-200 dark:hover:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950 transition-all"
+                    className="text-lg font-bold text-sky-600 dark:text-sky-400 px-8 py-3 rounded-full border-2 border-sky-100 dark:border-sky-900/30 hover:border-sky-200 dark:hover:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950 transition-all animate-nav-combined [animation-delay:300ms] opacity-0 [animation-fill-mode:forwards] btn-3d"
                   >
                     {t.nav.login}
                   </button>
                   <button
                     onClick={navigateToSignup}
-                    className="text-lg font-bold text-sky-600 dark:text-sky-400 px-8 py-3 rounded-full border-2 border-sky-100 dark:border-sky-900/30 hover:border-sky-200 dark:hover:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950 transition-all"
+                    className="text-lg font-bold text-sky-600 dark:text-sky-400 px-8 py-3 rounded-full border-2 border-sky-100 dark:border-sky-900/30 hover:border-sky-200 dark:hover:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950 transition-all animate-nav-combined [animation-delay:350ms] opacity-0 [animation-fill-mode:forwards] btn-3d"
                   >
                     {t.nav.signup}
                   </button>
@@ -176,7 +176,7 @@ const App: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowLangMenu(!showLangMenu)}
-                  className="flex items-center gap-1.5 p-2.5 rounded-full border-2 border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400 transition-all"
+                  className="flex items-center gap-1.5 p-2.5 rounded-full border-2 border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400 transition-all animate-nav-combined [animation-delay:400ms] opacity-0 [animation-fill-mode:forwards]"
                   title="Change Language"
                 >
                   <Globe className="w-5 h-5" />
@@ -207,7 +207,7 @@ const App: React.FC = () => {
               </div>
 
               <button
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-red-600 text-white font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-red-500/30 animate-pulse active:scale-95"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-red-600 text-white font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-red-500/30 animate-pulse active:scale-95 animate-nav-combined [animation-delay:450ms] opacity-0 [animation-fill-mode:forwards] btn-3d"
                 onClick={navigateToEmergency}
               >
                 <PhoneCall className="w-5 h-5" />

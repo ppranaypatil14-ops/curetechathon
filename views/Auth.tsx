@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Lock, User, Github, Chrome, ArrowRight, Eye, EyeOff, ChevronLeft, Shield } from 'lucide-react';
 
 interface AuthProps {
@@ -15,6 +15,47 @@ const Auth: React.FC<AuthProps> = ({ mode, onBack, onToggleMode, t }) => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
 
+  useEffect(() => {
+    const speakMessage = () => {
+      window.speechSynthesis.cancel();
+
+      const text = mode === 'login'
+        ? "Welcome back to CURE Clinic."
+        : "Join CURE Clinic Today.";
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95;
+      utterance.pitch = 1.2;
+      utterance.volume = 1;
+
+      // female voice
+      const voices = window.speechSynthesis.getVoices();
+      const femaleVoice = voices.find(voice =>
+        voice.name.includes('Zira') ||
+        voice.name.includes('Female') ||
+        voice.name.includes('Samantha') ||
+        voice.name.includes('Google US English')
+      );
+
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    };
+
+    const timer = setTimeout(() => {
+      speakMessage();
+    }, 600);
+
+    return () => {
+      clearTimeout(timer);
+      window.speechSynthesis.cancel();
+    };
+  }, [mode]);
+
+
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Simulate login/signup logic
@@ -22,11 +63,11 @@ const Auth: React.FC<AuthProps> = ({ mode, onBack, onToggleMode, t }) => {
   };
 
   return (
-    <div className="container mx-auto px-6 py-12 flex items-center justify-center min-h-[70vh] animate-fade transition-colors">
-      <div className="w-full max-w-5xl flex flex-col md:flex-row bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-800">
+    <div className="container mx-auto px-6 py-12 flex items-center justify-center min-h-[70vh] animate-bounce-down transition-colors perspective-1000">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-800 card-hover">
 
         {/* Visual Panel (Hidden on small screens) */}
-        <div className="hidden md:flex md:w-1/2 bg-slate-900 dark:bg-slate-950 p-12 text-white flex-col justify-between relative overflow-hidden">
+        <div className="hidden md:flex md:w-1/2 bg-slate-900 dark:bg-slate-950 p-12 text-white flex-col justify-between relative overflow-hidden preserve-3d">
           <div className="relative z-10">
             <button
               onClick={onBack}
@@ -34,17 +75,19 @@ const Auth: React.FC<AuthProps> = ({ mode, onBack, onToggleMode, t }) => {
             >
               <ChevronLeft className="w-4 h-4" /> {t.back}
             </button>
-            <h2 className="text-4xl font-extrabold leading-tight mb-6">
+            <h2 className="text-4xl font-extrabold leading-tight mb-6 animate-slide-left">
               {mode === 'login'
                 ? t.welcome
                 : t.signupWelcome}
             </h2>
-            <p className="text-white/60 text-lg font-medium leading-relaxed max-w-sm">
+            <p className="text-white/60 text-lg font-medium leading-relaxed max-w-sm animate-slide-left [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
               {t.desc}
             </p>
           </div>
 
-          <div className="relative z-10 bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-md">
+
+
+          <div className="relative z-10 bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-md animate-slide-left [animation-delay:400ms] opacity-0 [animation-fill-mode:forwards]">
             <div className="flex items-center gap-4 mb-4">
               <div className="p-2 bg-sky-500 rounded-xl">
                 <Shield className="w-6 h-6" />
@@ -143,7 +186,7 @@ const Auth: React.FC<AuthProps> = ({ mode, onBack, onToggleMode, t }) => {
 
             <button
               type="submit"
-              className="w-full py-5 bg-sky-600 text-white font-black text-lg rounded-[2rem] btn-shadow hover:bg-sky-700 transition-all shadow-xl flex items-center justify-center gap-3"
+              className="w-full py-5 bg-sky-600 text-white font-black text-lg rounded-[2rem] btn-shadow hover:bg-sky-700 transition-all shadow-xl flex items-center justify-center gap-3 btn-3d"
             >
               {mode === 'login' ? t.continue : t.signup}
               <ArrowRight className="w-5 h-5" />
@@ -157,10 +200,10 @@ const Auth: React.FC<AuthProps> = ({ mode, onBack, onToggleMode, t }) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center gap-2 py-3 border border-slate-100 dark:border-slate-700 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+              <button className="flex items-center justify-center gap-2 py-3 border border-slate-100 dark:border-slate-700 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all btn-3d">
                 <Chrome className="w-4 h-4" /> {t.google}
               </button>
-              <button className="flex items-center justify-center gap-2 py-3 border border-slate-100 dark:border-slate-700 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+              <button className="flex items-center justify-center gap-2 py-3 border border-slate-100 dark:border-slate-700 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all btn-3d">
                 <Github className="w-4 h-4" /> {t.github}
               </button>
             </div>

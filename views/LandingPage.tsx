@@ -1,6 +1,29 @@
-
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Shield, Users, Clock, Heart, ArrowRight, Star, Stethoscope, Microscope, Baby, Pill } from 'lucide-react';
+
+const Reveal = ({ children, animation, delay = 0, className = '' }: { children: React.ReactNode, animation: string, delay?: number, className?: string }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1 });
+
+    if (ref.current) observer.observe(ref.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className={`${className} ${isVisible ? animation : 'opacity-0'}`} style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}>
+      {children}
+    </div>
+  );
+};
 
 interface LandingPageProps {
   onBookClick: () => void;
@@ -59,33 +82,33 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick, 
 
         <div className="w-full px-12 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="animate-fade">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 text-xs font-extrabold uppercase tracking-widest mb-6 border border-sky-100 dark:border-sky-800 shadow-sm">
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 text-xs font-extrabold uppercase tracking-widest mb-6 border border-sky-100 dark:border-sky-800 shadow-sm animate-slide-left">
                 <span className="flex h-2 w-2 rounded-full bg-sky-600"></span>
                 {t.hero.badge}
               </div>
-              <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white leading-[1.1] mb-8 tracking-[-0.02em]">
+              <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white leading-[1.1] mb-8 tracking-[-0.02em] animate-slide-left [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
                 {t.hero.title}
               </h1>
-              <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 mb-10 leading-[1.7] max-w-xl font-medium">
+              <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 mb-10 leading-[1.7] max-w-xl font-medium animate-slide-left [animation-delay:400ms] opacity-0 [animation-fill-mode:forwards]">
                 {t.hero.desc}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 mb-16">
+              <div className="flex flex-col sm:flex-row gap-4 mb-16 animate-slide-left [animation-delay:600ms] opacity-0 [animation-fill-mode:forwards]">
                 <button
                   onClick={onBookClick}
-                  className="bg-sky-600 text-white px-8 py-4 rounded-2xl font-bold text-lg btn-shadow hover:bg-sky-700 transition-all flex items-center justify-center gap-2 group"
+                  className="bg-sky-600 text-white px-8 py-4 rounded-2xl font-bold text-lg btn-shadow hover:bg-sky-700 transition-all flex items-center justify-center gap-2 group btn-3d"
                 >
                   {t.hero.book} <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
                   onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm text-slate-700 dark:text-slate-200 px-8 py-4 rounded-2xl font-bold text-lg border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-900 transition-all shadow-sm"
+                  className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm text-slate-700 dark:text-slate-200 px-8 py-4 rounded-2xl font-bold text-lg border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-900 transition-all shadow-sm btn-3d"
                 >
                   Our Services
                 </button>
               </div>
 
-              <div className="flex items-center gap-12">
+              <div className="flex items-center gap-12 animate-slide-left [animation-delay:800ms] opacity-0 [animation-fill-mode:forwards]">
                 <div className="flex flex-col">
                   <span className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tighter">25+</span>
                   <span className="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Specialists</span>
@@ -103,8 +126,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick, 
               </div>
             </div>
 
-            <div className="relative animate-fade delay-200 hidden lg:block">
-              <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white dark:border-slate-900 transform lg:rotate-2 hover:rotate-0 transition-transform duration-700">
+            <div className="relative animate-roll-right hidden lg:block perspective-1000">
+              <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white dark:border-slate-900 transform lg:rotate-2 hover:rotate-0 transition-transform duration-700 animate-float-3d">
                 <img
                   src="/doctor.jpg"
                   alt="Doctor Illustration"
@@ -131,7 +154,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick, 
             {services.map((s, idx) => (
               <div
                 key={idx}
-                className={`group p-10 rounded-[2.5rem] bg-white dark:bg-slate-900/40 backdrop-blur-sm border border-slate-100 dark:border-slate-800/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${getBorderClasses(s.color)}`}
+                className={`group p-10 rounded-[2.5rem] bg-white dark:bg-slate-900/40 backdrop-blur-sm border border-slate-100 dark:border-slate-800/50 transition-all duration-500 hover:shadow-2xl card-hover ${getBorderClasses(s.color)}`}
               >
                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 mb-8 ${getColorClasses(s.color)} shadow-sm`}>
                   {React.cloneElement(s.icon as React.ReactElement<any>, { className: 'w-8 h-8' })}
@@ -155,7 +178,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick, 
       {/* Trust/About Section */}
       <section id="about" className="py-24 bg-slate-50 dark:bg-slate-900/20 transition-colors">
         <div className="w-full px-12 flex flex-col xl:flex-row items-center gap-20">
-          <div className="flex-1 space-y-8">
+          <div className="flex-1 space-y-8 animate-slide-left [animation-delay:400ms] opacity-0 [animation-fill-mode:forwards]">
             <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">{t.about.title}</h2>
             <div className="space-y-6">
               {[
@@ -175,7 +198,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick, 
               ))}
             </div>
           </div>
-          <div className="flex-1 w-full">
+          <div className="flex-1 w-full animate-slide-right [animation-delay:600ms] opacity-0 [animation-fill-mode:forwards]">
             <div className="bg-white dark:bg-slate-900 p-12 rounded-[3rem] shadow-xl dark:shadow-2xl border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
               <div className="flex gap-1 text-amber-400 mb-6">
                 {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-5 h-5 fill-current" />)}
@@ -203,7 +226,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onBookClick, onServiceClick, 
       {/* Appointment CTA */}
       <section id="contact" className="py-32 transition-colors">
         <div className="w-full px-12">
-          <div className="bg-slate-900 dark:bg-slate-900/80 rounded-[4rem] p-16 md:p-32 text-white relative overflow-hidden text-center md:text-left shadow-2xl">
+          <div className="bg-slate-900 dark:bg-slate-900/80 rounded-[4rem] p-16 md:p-32 text-white relative overflow-hidden text-center md:text-left shadow-2xl animate-bounce-down [animation-delay:800ms] opacity-0 [animation-fill-mode:forwards]">
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
               <div className="max-w-xl">
                 <h2 className="text-4xl md:text-6xl font-extrabold mb-8 leading-[1.1] tracking-tight">{t.cta.title}</h2>
